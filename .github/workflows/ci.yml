@@ -39,3 +39,11 @@ jobs:
       - name: Build frontend
         run: npm run build
         working-directory: src/Ventilationsservice.Web
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+        working-directory: src/Ventilationsservice.Web
+
+      - name: Run frontend end-to-end tests
+        run: npm run test:e2e
+        working-directory: src/Ventilationsservice.Web

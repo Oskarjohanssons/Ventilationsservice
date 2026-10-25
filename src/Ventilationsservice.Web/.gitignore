@@ -7,3 +7,7 @@
 *.db-wal
 *.tsbuildinfo
 .vscode/
+
+.playwright-browsers/
+test-results/
+playwright-report/

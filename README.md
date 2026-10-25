@@ -73,6 +73,17 @@ Kör testerna från projektroten:
 dotnet test
 ```
 
+Frontendens automatiserade webbläsartest körs från webbprojektets mapp. Installera Chromium en gång och kör sedan testet:
+
+```powershell
+cd src/Ventilationsservice.Web
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+End-to-end-testet använder en simulerad API-respons och går igenom formulären i webbgränssnittet. GitHub Actions kör samma test automatiskt vid push och pull request.
+
 ## Status
 
 API, EF Core-migration, SQLite-databas och webbgränssnittets grundflöden finns på plats. Frontendens produktionsbygge kan kontrolleras med `npm run build`.

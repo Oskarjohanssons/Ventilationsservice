@@ -4,3 +4,4 @@
 
 .nav{border:0;background:transparent;width:100%;font-family:inherit;text-align:left}.nav:focus-visible{outline:2px solid #75a482;outline-offset:1px}.panel,#overview{scroll-margin-top:14px}
 @media(max-width:680px){aside{position:sticky;top:0;z-index:4;width:auto;height:auto;min-height:0;padding:8px 12px;flex-direction:row;flex-wrap:wrap;align-items:center;gap:0 4px}.brand{flex:1 0 100%;margin:0 0 4px;gap:8px}.brand>span{width:35px;height:35px}.brand b{font-size:16px}.brand small,aside .label,.connection{display:none}.content .label{display:block}aside .nav,aside .nav:not(.active){display:block;width:auto;margin:0 4px 0 0;padding:7px 9px;font-size:11px}.nav span{margin-left:4px}aside .nav.active{margin:0}main{margin:0}}
+.field select{width:100%;border:1px solid #dfe6e0;border-radius:7px;padding:9px 10px;background:#fff;font-size:12px;color:#26342b;outline-color:#75a482}.field select:focus{border-color:#75a482;box-shadow:0 0 0 3px #e6f2e9}

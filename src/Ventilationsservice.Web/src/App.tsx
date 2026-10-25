@@ -51,7 +51,8 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<"overview" | "units" | "cases">("overview");
   const [error, setError] = useState("");
   const [unitOpen, setUnitOpen] = useState(false);
-  const [caseUnit, setCaseUnit] = useState<Unit | null>(null);
+  const [caseModalOpen, setCaseModalOpen] = useState(false);
+  const [caseUnitId, setCaseUnitId] = useState("");
   const [selectedUnit, setSelectedUnit] = useState<UnitDetails | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
@@ -72,6 +73,13 @@ export default function App() {
   useEffect(() => {
     void refresh();
   }, []);
+
+  const caseUnit = units.find((unit) => unit.id === caseUnitId) ?? null;
+
+  function openCaseForm(unit?: Unit) {
+    setCaseUnitId(unit?.id ?? "");
+    setCaseModalOpen(true);
+  }
 
   function navigateTo(section: "overview" | "units" | "cases") {
     setActiveSection(section);
@@ -127,10 +135,11 @@ export default function App() {
 
   async function submitCase(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!caseUnit) return;
     const form = new FormData(event.currentTarget);
+    const unitId = String(form.get("ventilationUnitId") ?? "");
+    if (!unitId) return;
     try {
-      await api<ServiceCase>(`/api/units/${caseUnit.id}/service-cases`, {
+      await api<ServiceCase>(`/api/units/${unitId}/service-cases`, {
         method: "POST",
         body: JSON.stringify({
           title: form.get("title"),
@@ -138,7 +147,8 @@ export default function App() {
           dueDate: form.get("dueDate"),
         }),
       });
-      setCaseUnit(null);
+      setCaseModalOpen(false);
+      setCaseUnitId("");
       await refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Kunde inte skapa ärendet.");
@@ -160,7 +170,8 @@ export default function App() {
 
   function startCaseFromDetails() {
     if (!selectedUnit) return;
-    setCaseUnit(selectedUnit);
+    setCaseUnitId(selectedUnit.id);
+    setCaseModalOpen(true);
     setSelectedUnit(null);
   }
 
@@ -190,7 +201,11 @@ export default function App() {
               <h1>{activeSection === "overview" ? "Serviceöversikt" : activeSection === "units" ? "Ventilationsaggregat" : "Serviceärenden"}</h1>
               <p>{activeSection === "overview" ? "Håll koll på dina ventilationsaggregat och serviceärenden." : activeSection === "units" ? "Sök bland aggregat och öppna deras servicehistorik." : "Följ öppna, kommande och försenade serviceärenden."}</p>
             </div>
-            {activeSection !== "cases" && <button className="primary" onClick={() => setUnitOpen(true)}>＋ Lägg till aggregat</button>}
+            {activeSection === "cases" ? (
+              <button className="primary" disabled={units.length === 0} title={units.length === 0 ? "Registrera ett aggregat först" : undefined} onClick={() => openCaseForm()}>＋ Nytt serviceärende</button>
+            ) : (
+              <button className="primary" onClick={() => setUnitOpen(true)}>＋ Lägg till aggregat</button>
+            )}
           </section>
 
           {error && <div className="error">{error}</div>}
@@ -260,7 +275,7 @@ export default function App() {
                     unit={unit}
                     openCount={cases.filter((item) => item.ventilationUnitId === unit.id && item.status === "Open").length}
                     onView={() => void showUnitDetails(unit)}
-                    onAddCase={() => setCaseUnit(unit)}
+                    onAddCase={() => openCaseForm(unit)}
                   />
                 ))}
               </div>
@@ -287,10 +302,21 @@ export default function App() {
         </Modal>
       )}
 
-      {caseUnit && (
-        <Modal title="Nytt serviceärende" close={() => setCaseUnit(null)}>
-          <p className="modal-note">Kopplas till <b>{caseUnit.assetNumber}</b> · {caseUnit.location}</p>
+      {caseModalOpen && (
+        <Modal title="Nytt serviceärende" close={() => { setCaseModalOpen(false); setCaseUnitId(""); }}>
+          {caseUnit && <p className="modal-note">Valt aggregat: <b>{caseUnit.assetNumber}</b> · {caseUnit.location}</p>}
           <form onSubmit={submitCase}>
+            <label className="field">
+              Ventilationsaggregat *
+              <select name="ventilationUnitId" required value={caseUnitId} onChange={(event) => setCaseUnitId(event.target.value)}>
+                <option value="" disabled>Välj aggregat…</option>
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.assetNumber} — {unit.location} ({[unit.manufacturer, unit.model].filter(Boolean).join(" · ") || "Okänt märke"})
+                  </option>
+                ))}
+              </select>
+            </label>
             <Field label="Rubrik *" name="title" required placeholder="Ex. Kontrollera filter" />
             <label className="field">
               Beskrivning
@@ -304,7 +330,7 @@ export default function App() {
               defaultValue={new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10)}
             />
             <div className="actions">
-              <button type="button" onClick={() => setCaseUnit(null)}>Avbryt</button>
+              <button type="button" onClick={() => { setCaseModalOpen(false); setCaseUnitId(""); }}>Avbryt</button>
               <button className="primary">Skapa ärende</button>
             </div>
           </form>
@@ -473,5 +499,4 @@ function Modal({
     </div>
   );
 }
-
 

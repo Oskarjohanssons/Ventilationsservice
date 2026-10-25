@@ -7,6 +7,8 @@ public static class DemoDataSeeder
 {
     public static async Task<bool> SeedIfEmptyAsync(AppDbContext dbContext, CancellationToken cancellationToken = default)
     {
+        await dbContext.Database.MigrateAsync(cancellationToken);
+
         if (await dbContext.VentilationUnits.AnyAsync(cancellationToken))
         {
             return false;

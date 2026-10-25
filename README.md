@@ -53,6 +53,13 @@ Ett genomfört serviceärende fungerar som historikpost i den här första versi
 
 OpenAPI-dokumentet exponeras i utvecklingsläge på `/openapi/v1.json`.
 
+## Kostnadsfri demo på Render
+
+Projektet innehåller `Dockerfile` och `render.yaml` för att publicera API:t och React-gränssnittet som en tjänst på Render Free. Blueprinten använder en tillfällig SQLite-databas i `/tmp` och aktiverar fiktiv demodata. Ingen persistent disk eller betalplan krävs.
+
+Render Free stänger av tjänsten efter 15 minuter utan trafik och den första laddningen efter vila kan ta omkring en minut. SQLite-filen försvinner när tjänsten startas om eller vilar; demodata skapas då igen. Ändringar som en besökare gör i demon sparas alltså inte permanent. [Render beskriver begränsningarna för gratistjänster här](https://render.com/docs/free).
+
+För att skapa demon går du till Render, väljer **New → Blueprint**, ansluter GitHub och väljer det här repot. Granska att tjänsten använder **Free**-planen innan du skapar den. Render visar sedan en publik `onrender.com`-adress när bygget är klart.
 ## Köra lokalt
 
 Starta API:t från projektroten i en terminal:

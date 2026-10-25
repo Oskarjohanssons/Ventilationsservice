@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ventilationsservice-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/units
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DemoData__Enabled
+        value: "true"
+      - key: ConnectionStrings__DefaultConnection
+        value: Data Source=/tmp/ventilationsservice.db

@@ -48,7 +48,7 @@ export default function App() {
   const [cases, setCases] = useState<ServiceCase[]>([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState<"overview" | "units" | "cases">("overview");
   const [error, setError] = useState("");
   const [unitOpen, setUnitOpen] = useState(false);
   const [caseUnit, setCaseUnit] = useState<Unit | null>(null);
@@ -75,13 +75,7 @@ export default function App() {
 
   function navigateTo(section: "overview" | "units" | "cases") {
     setActiveSection(section);
-    if (section === "overview") {
-      document.getElementById("overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    document.getElementById(section)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-
   async function showUnitDetails(unit: Unit) {
     setDetailLoading(true);
     setSelectedUnit(null);
@@ -193,22 +187,22 @@ export default function App() {
           <section className="heading" id="overview">
             <div>
               <small className="label">VENTILATIONSSERVICE</small>
-              <h1>Serviceöversikt</h1>
-              <p>Håll koll på dina ventilationsaggregat och serviceärenden.</p>
+              <h1>{activeSection === "overview" ? "Serviceöversikt" : activeSection === "units" ? "Ventilationsaggregat" : "Serviceärenden"}</h1>
+              <p>{activeSection === "overview" ? "Håll koll på dina ventilationsaggregat och serviceärenden." : activeSection === "units" ? "Sök bland aggregat och öppna deras servicehistorik." : "Följ öppna, kommande och försenade serviceärenden."}</p>
             </div>
-            <button className="primary" onClick={() => setUnitOpen(true)}>＋ Lägg till aggregat</button>
+            {activeSection !== "cases" && <button className="primary" onClick={() => setUnitOpen(true)}>＋ Lägg till aggregat</button>}
           </section>
 
           {error && <div className="error">{error}</div>}
 
-          <section className="stats">
+          <section className="stats" hidden={activeSection !== "overview"}>
             <Stat title="Registrerade aggregat" value={units.length} />
             <Stat title="Öppna serviceärenden" value={openCases.length} />
             <Stat title="Förfaller inom 30 dagar" value={upcoming.length} />
             <Stat title="Försenade ärenden" value={overdue.length} />
           </section>
 
-          <section className="panel" id="cases">
+          <section className="panel" id="cases" hidden={activeSection === "units"}>
             <div className="panel-head">
               <div><small className="label">ATT GÖRA</small><h2>Serviceärenden</h2></div>
               <div className="tabs">
@@ -246,7 +240,7 @@ export default function App() {
             )}
           </section>
 
-          <section className="panel" id="units">
+          <section className="panel" id="units" hidden={activeSection === "cases"}>
             <div className="panel-head">
               <div><small className="label">REGISTER</small><h2>Ventilationsaggregat</h2></div>
               <input
@@ -479,4 +473,5 @@ function Modal({
     </div>
   );
 }
+
 

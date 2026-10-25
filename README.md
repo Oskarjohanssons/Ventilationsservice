@@ -26,6 +26,9 @@ Ett litet portfolio-projekt för att registrera ventilationsaggregat och följa 
 - Välj ett befintligt aggregat i serviceformuläret; listan visar inventarienummer, plats, tillverkare och modell.
 - Registrera aggregat med fri text för plats, tillverkare och modell. Formuläret föreslår vanliga tillverkare och produktserier, men accepterar även egna värden.
 - Redigera inventarienummer, plats, tillverkare och modell för ett befintligt aggregat.
+- Lägg till tydligt fiktiva demoaggregat och serviceärenden automatiskt i en tom databas när demodata är aktiverad.
+
+I utvecklingsmiljö är demodata aktiverad. Tre exempelaggregat och deras serviceärenden läggs till endast om databasen är tom. Befintliga aggregat påverkas inte. För en demo i en annan miljö aktiverar du inställningen `DemoData:Enabled` (miljövariabel: `DemoData__Enabled=true`).
 
 Ett genomfört serviceärende fungerar som historikpost i den här första versionen. En separat modell för servicebesök kan läggas till senare om projektet behöver skilja mellan planerat arbete och utfört besök.
 

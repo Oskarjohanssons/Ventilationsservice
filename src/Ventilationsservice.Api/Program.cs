@@ -17,6 +17,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+if (app.Configuration.GetValue<bool>("DemoData:Enabled"))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DemoDataSeeder.SeedIfEmptyAsync(dbContext);
+}
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

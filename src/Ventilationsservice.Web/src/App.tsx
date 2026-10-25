@@ -48,6 +48,7 @@ export default function App() {
   const [cases, setCases] = useState<ServiceCase[]>([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [activeSection, setActiveSection] = useState("overview");
   const [error, setError] = useState("");
   const [unitOpen, setUnitOpen] = useState(false);
   const [caseUnit, setCaseUnit] = useState<Unit | null>(null);
@@ -71,6 +72,15 @@ export default function App() {
   useEffect(() => {
     void refresh();
   }, []);
+
+  function navigateTo(section: "overview" | "units" | "cases") {
+    setActiveSection(section);
+    if (section === "overview") {
+      document.getElementById("overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    document.getElementById(section)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   async function showUnitDetails(unit: Unit) {
     setDetailLoading(true);
@@ -168,9 +178,9 @@ export default function App() {
           <div><b>luftkoll</b><small>SERVICEÖVERSIKT</small></div>
         </div>
         <p className="muted label">ARBETSYTA</p>
-        <a className="nav active" href="#">▦　Översikt</a>
-        <a className="nav" href="#units">▤　Aggregat <span>{units.length}</span></a>
-        <a className="nav" href="#cases">◷　Serviceärenden</a>
+        <button type="button" className={`nav ${activeSection === "overview" ? "active" : ""}`} aria-current={activeSection === "overview" ? "location" : undefined} onClick={() => navigateTo("overview")}>▦　Översikt</button>
+        <button type="button" className={`nav ${activeSection === "units" ? "active" : ""}`} aria-current={activeSection === "units" ? "location" : undefined} onClick={() => navigateTo("units")}>▤　Aggregat <span>{units.length}</span></button>
+        <button type="button" className={`nav ${activeSection === "cases" ? "active" : ""}`} aria-current={activeSection === "cases" ? "location" : undefined} onClick={() => navigateTo("cases")}>◷　Serviceärenden</button>
         <div className="connection"><i />API anslutet<small>Portfolio · Version 0.1</small></div>
       </aside>
 
@@ -180,7 +190,7 @@ export default function App() {
           <button className="refresh" onClick={() => void refresh()}>↻ Uppdatera</button>
         </header>
         <div className="content">
-          <section className="heading">
+          <section className="heading" id="overview">
             <div>
               <small className="label">VENTILATIONSSERVICE</small>
               <h1>Serviceöversikt</h1>

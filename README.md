@@ -24,6 +24,7 @@ Ett litet portfolio-projekt för att registrera ventilationsaggregat och följa 
 - React-vy för att skapa aggregat och serviceärenden, söka aggregat, se serviceöversikt och klarmarkera ärenden.
 - Visa varje aggregats servicehistorik med öppna och genomförda ärenden, beskrivningar och datum.
 - Välj ett befintligt aggregat i serviceformuläret; listan visar inventarienummer, plats, tillverkare och modell.
+- Registrera aggregat med fri text för plats, tillverkare och modell. Formuläret föreslår vanliga tillverkare och produktserier, men accepterar även egna värden.
 
 Ett genomfört serviceärende fungerar som historikpost i den här första versionen. En separat modell för servicebesök kan läggas till senare om projektet behöver skilja mellan planerat arbete och utfört besök.
 

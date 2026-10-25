@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { manufacturers, productsForManufacturer } from "./data/ventilationCatalog";
 
 type ServiceCase = {
   id: string;
@@ -51,6 +52,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<"overview" | "units" | "cases">("overview");
   const [error, setError] = useState("");
   const [unitOpen, setUnitOpen] = useState(false);
+  const [manufacturer, setManufacturer] = useState("");
   const [caseModalOpen, setCaseModalOpen] = useState(false);
   const [caseUnitId, setCaseUnitId] = useState("");
   const [selectedUnit, setSelectedUnit] = useState<UnitDetails | null>(null);
@@ -204,7 +206,7 @@ export default function App() {
             {activeSection === "cases" ? (
               <button className="primary" disabled={units.length === 0} title={units.length === 0 ? "Registrera ett aggregat först" : undefined} onClick={() => openCaseForm()}>＋ Nytt serviceärende</button>
             ) : (
-              <button className="primary" onClick={() => setUnitOpen(true)}>＋ Lägg till aggregat</button>
+              <button className="primary" onClick={() => { setManufacturer(""); setUnitOpen(true); }}>＋ Lägg till aggregat</button>
             )}
           </section>
 
@@ -291,8 +293,16 @@ export default function App() {
             <Field label="Inventarienummer *" name="assetNumber" required placeholder="Ex. VENT-002" />
             <Field label="Plats *" name="location" required placeholder="Ex. Kontor, plan 3" />
             <div className="two">
-              <Field label="Tillverkare" name="manufacturer" placeholder="Ex. Swegon" />
-              <Field label="Modell" name="model" placeholder="Ex. GOLD RX" />
+              <label className="field">
+                Tillverkare
+                <input name="manufacturer" list="manufacturer-options" placeholder="Skriv eller välj tillverkare" value={manufacturer} onChange={(event) => setManufacturer(event.target.value)} />
+                <datalist id="manufacturer-options">{manufacturers.map((name) => <option key={name} value={name} />)}</datalist>
+              </label>
+              <label className="field">
+                Modell / produktserie
+                <input name="model" list="model-options" placeholder="Skriv eller välj modell" />
+                <datalist id="model-options">{productsForManufacturer(manufacturer).map((name) => <option key={name} value={name} />)}</datalist>
+              </label>
             </div>
             <div className="actions">
               <button type="button" onClick={() => setUnitOpen(false)}>Avbryt</button>

@@ -1,5 +1,7 @@
 # Ventilationsservice
 
+[![CI](https://github.com/Oskarjohanssons/Ventilationsservice/actions/workflows/ci.yml/badge.svg)](https://github.com/Oskarjohanssons/Ventilationsservice/actions/workflows/ci.yml)
+
 Ett litet portfolio-projekt för att registrera ventilationsaggregat och följa deras serviceärenden. Projektet använder fiktiva exempeldata.
 
 ## Skärmbild
@@ -71,5 +73,4 @@ dotnet test
 ## Status
 
 API, EF Core-migration, SQLite-databas och webbgränssnittets grundflöden finns på plats. Frontendens produktionsbygge kan kontrolleras med `npm run build`.
-
 

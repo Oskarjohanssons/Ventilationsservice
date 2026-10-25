@@ -25,6 +25,7 @@ Ett litet portfolio-projekt för att registrera ventilationsaggregat och följa 
 - Visa varje aggregats servicehistorik med öppna och genomförda ärenden, beskrivningar och datum.
 - Välj ett befintligt aggregat i serviceformuläret; listan visar inventarienummer, plats, tillverkare och modell.
 - Registrera aggregat med fri text för plats, tillverkare och modell. Formuläret föreslår vanliga tillverkare och produktserier, men accepterar även egna värden.
+- Redigera inventarienummer, plats, tillverkare och modell för ett befintligt aggregat.
 
 Ett genomfört serviceärende fungerar som historikpost i den här första versionen. En separat modell för servicebesök kan läggas till senare om projektet behöver skilja mellan planerat arbete och utfört besök.
 
@@ -87,4 +88,3 @@ End-to-end-testet använder en simulerad API-respons och går igenom formulären
 ## Status
 
 API, EF Core-migration, SQLite-databas och webbgränssnittets grundflöden finns på plats. Frontendens produktionsbygge kan kontrolleras med `npm run build`.
-

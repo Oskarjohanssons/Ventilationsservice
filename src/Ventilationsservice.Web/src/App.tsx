@@ -52,6 +52,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<"overview" | "units" | "cases">("overview");
   const [error, setError] = useState("");
   const [unitOpen, setUnitOpen] = useState(false);
+  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
   const [manufacturer, setManufacturer] = useState("");
   const [caseModalOpen, setCaseModalOpen] = useState(false);
   const [caseUnitId, setCaseUnitId] = useState("");
@@ -77,6 +78,23 @@ export default function App() {
   }, []);
 
   const caseUnit = units.find((unit) => unit.id === caseUnitId) ?? null;
+
+  function openNewUnitForm() {
+    setEditingUnit(null);
+    setManufacturer("");
+    setUnitOpen(true);
+  }
+
+  function openEditUnitForm(unit: Unit) {
+    setEditingUnit(unit);
+    setManufacturer(unit.manufacturer ?? "");
+    setUnitOpen(true);
+  }
+
+  function closeUnitForm() {
+    setUnitOpen(false);
+    setEditingUnit(null);
+  }
 
   function openCaseForm(unit?: Unit) {
     setCaseUnitId(unit?.id ?? "");
@@ -119,8 +137,8 @@ export default function App() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     try {
-      await api<Unit>("/api/units", {
-        method: "POST",
+      await api<Unit>(editingUnit ? `/api/units/${editingUnit.id}` : "/api/units", {
+        method: editingUnit ? "PUT" : "POST",
         body: JSON.stringify({
           assetNumber: form.get("assetNumber"),
           location: form.get("location"),
@@ -128,10 +146,10 @@ export default function App() {
           model: form.get("model") || null,
         }),
       });
-      setUnitOpen(false);
+      closeUnitForm();
       await refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Kunde inte skapa aggregatet.");
+      setError(e instanceof Error ? e.message : "Kunde inte spara aggregatet.");
     }
   }
 
@@ -206,7 +224,7 @@ export default function App() {
             {activeSection === "cases" ? (
               <button className="primary" disabled={units.length === 0} title={units.length === 0 ? "Registrera ett aggregat först" : undefined} onClick={() => openCaseForm()}>＋ Nytt serviceärende</button>
             ) : (
-              <button className="primary" onClick={() => { setManufacturer(""); setUnitOpen(true); }}>＋ Lägg till aggregat</button>
+              <button className="primary" onClick={openNewUnitForm}>＋ Lägg till aggregat</button>
             )}
           </section>
 
@@ -277,6 +295,7 @@ export default function App() {
                     unit={unit}
                     openCount={cases.filter((item) => item.ventilationUnitId === unit.id && item.status === "Open").length}
                     onView={() => void showUnitDetails(unit)}
+                    onEdit={() => openEditUnitForm(unit)}
                     onAddCase={() => openCaseForm(unit)}
                   />
                 ))}
@@ -288,10 +307,10 @@ export default function App() {
       </main>
 
       {unitOpen && (
-        <Modal title="Registrera aggregat" close={() => setUnitOpen(false)}>
+        <Modal title={editingUnit ? "Redigera aggregat" : "Registrera aggregat"} close={closeUnitForm}>
           <form onSubmit={submitUnit}>
-            <Field label="Inventarienummer *" name="assetNumber" required placeholder="Ex. VENT-002" />
-            <Field label="Plats *" name="location" required placeholder="Ex. Kontor, plan 3" />
+            <Field label="Inventarienummer *" name="assetNumber" required placeholder="Ex. VENT-002" defaultValue={editingUnit?.assetNumber ?? ""} />
+            <Field label="Plats *" name="location" required placeholder="Ex. Kontor, plan 3" defaultValue={editingUnit?.location ?? ""} />
             <div className="two">
               <label className="field">
                 Tillverkare
@@ -300,13 +319,13 @@ export default function App() {
               </label>
               <label className="field">
                 Modell / produktserie
-                <input name="model" list="model-options" placeholder="Skriv eller välj modell" />
+                <input name="model" list="model-options" placeholder="Skriv eller välj modell" defaultValue={editingUnit?.model ?? ""} />
                 <datalist id="model-options">{productsForManufacturer(manufacturer).map((name) => <option key={name} value={name} />)}</datalist>
               </label>
             </div>
             <div className="actions">
-              <button type="button" onClick={() => setUnitOpen(false)}>Avbryt</button>
-              <button className="primary">Spara aggregat</button>
+              <button type="button" onClick={closeUnitForm}>Avbryt</button>
+              <button className="primary">{editingUnit ? "Spara ändringar" : "Spara aggregat"}</button>
             </div>
           </form>
         </Modal>
@@ -370,11 +389,13 @@ function UnitCard({
   unit,
   openCount,
   onView,
+  onEdit,
   onAddCase,
 }: {
   unit: Unit;
   openCount: number;
   onView: () => void;
+  onEdit: () => void;
   onAddCase: () => void;
 }) {
   return (
@@ -382,6 +403,7 @@ function UnitCard({
       <div className="unit-top">
         <span className="unit-symbol">◉</span>
         <b>{unit.assetNumber}</b>
+        <button title="Redigera aggregat" aria-label={`Redigera ${unit.assetNumber}`} onClick={onEdit}>✎</button>
         <button title="Skapa serviceärende" aria-label={`Skapa serviceärende för ${unit.assetNumber}`} onClick={onAddCase}>＋</button>
       </div>
       <h3>{unit.location}</h3>
@@ -509,4 +531,3 @@ function Modal({
     </div>
   );
 }
-

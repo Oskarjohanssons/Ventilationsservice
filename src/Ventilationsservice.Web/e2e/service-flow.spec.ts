@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("register a unit and follow a service case", async ({ page }) => {
+test("register and edit a unit, then follow a service case", async ({ page }) => {
   const units: Array<Record<string, unknown>> = [];
   const cases: Array<Record<string, unknown>> = [];
 
@@ -22,6 +22,14 @@ test("register a unit and follow a service case", async ({ page }) => {
       };
       cases.push(serviceCase);
       await route.fulfill({ status: 201, json: serviceCase });
+      return;
+    }
+
+    if (request.method() === "PUT") {
+      const body = request.postDataJSON();
+      const index = units.findIndex((unit) => unit.id === url.pathname.split("/").at(-1));
+      units[index] = { ...units[index], ...body };
+      await route.fulfill({ json: units[index] });
       return;
     }
 
@@ -58,6 +66,16 @@ test("register a unit and follow a service case", async ({ page }) => {
   await expect(page.getByText("E2E-VENT-001")).toBeVisible();
   await expect(page.getByText("Swegon · GOLD")).toBeVisible();
 
+  await page.getByRole("button", { name: "Redigera E2E-VENT-001" }).click();
+  await expect(page.getByRole("dialog", { name: "Redigera aggregat" })).toBeVisible();
+  await expect(page.locator('input[name="location"]')).toHaveValue("Testkontor, plan 2");
+  await page.locator('input[name="location"]').fill("Testkontor, plan 3");
+  await page.locator('input[name="manufacturer"]').fill("Systemair");
+  await expect(page.locator('#model-options option[value="Geniox"]')).toHaveCount(1);
+  await page.locator('input[name="model"]').fill("Geniox");
+  await page.getByRole("button", { name: "Spara ändringar" }).click();
+  await expect(page.getByText("Systemair · Geniox")).toBeVisible();
+
   await page.getByRole("button", { name: /Serviceärenden/ }).click();
   await page.getByRole("button", { name: /Nytt serviceärende/ }).click();
   await page.locator('select[name="ventilationUnitId"]').selectOption("unit-demo-1");
@@ -66,5 +84,5 @@ test("register a unit and follow a service case", async ({ page }) => {
   await page.getByRole("button", { name: "Skapa ärende" }).click();
 
   await expect(page.getByText("E2E-kontroll av filter")).toBeVisible();
-  await expect(page.getByText("E2E-VENT-001 · Testkontor, plan 2")).toBeVisible();
+  await expect(page.getByText("E2E-VENT-001 · Testkontor, plan 3")).toBeVisible();
 });

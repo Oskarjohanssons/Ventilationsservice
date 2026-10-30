@@ -2,7 +2,21 @@
 
 [![CI](https://github.com/Oskarjohanssons/Ventilationsservice/actions/workflows/ci.yml/badge.svg)](https://github.com/Oskarjohanssons/Ventilationsservice/actions/workflows/ci.yml)
 
-Ett litet portfolio-projekt för att registrera ventilationsaggregat och följa deras serviceärenden. Projektet använder fiktiva exempeldata.
+Jag har tidigare erfarenhet inom ventilation och byggde det här projektet för att kombinera den verksamhetskunskapen med systemutveckling i .NET. Appen hjälper en användare att hålla ordning på ventilationsaggregat och deras serviceärenden. All information i demon är fiktiv.
+
+## Lösningens uppbyggnad
+
+Webbgränssnittet anropar ett ASP.NET Core API. API:t använder Entity Framework Core för att läsa och skriva data i SQLite.
+
+```mermaid
+flowchart LR
+    User[Användare] --> Web[React och TypeScript]
+    Web --> API[ASP.NET Core Web API]
+    API --> EF[Entity Framework Core]
+    EF --> DB[(SQLite)]
+```
+
+Gränssnittet och API:t publiceras tillsammans som en tjänst. API-reglerna testas med xUnit, och GitHub Actions kör projektets automatiska kontroller vid ändringar.
 
 ## Skärmbild
 
@@ -60,6 +74,7 @@ Projektet innehåller `Dockerfile` och `render.yaml` för att publicera API:t oc
 Render Free stänger av tjänsten efter 15 minuter utan trafik och den första laddningen efter vila kan ta omkring en minut. SQLite-filen försvinner när tjänsten startas om eller vilar; demodata skapas då igen. Ändringar som en besökare gör i demon sparas alltså inte permanent. [Render beskriver begränsningarna för gratistjänster här](https://render.com/docs/free).
 
 För att skapa demon går du till Render, väljer **New → Blueprint**, ansluter GitHub och väljer det här repot. Granska att tjänsten använder **Free**-planen innan du skapar den. Render visar sedan en publik `onrender.com`-adress när bygget är klart.
+
 ## Köra lokalt
 
 Starta API:t från projektroten i en terminal:
@@ -97,4 +112,4 @@ End-to-end-testet använder en simulerad API-respons och går igenom formulären
 
 ## Status
 
-API, EF Core-migration, SQLite-databas och webbgränssnittets grundflöden finns på plats. Frontendens produktionsbygge kan kontrolleras med `npm run build`.
+Första versionen innehåller API, EF Core-migration, SQLite-databas, webbgränssnittets huvudflöden och automatiserade kontroller. Projektet är en portfolio-demo med fiktiva data, inte ett produktionssystem för verkliga serviceuppgifter.

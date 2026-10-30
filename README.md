@@ -4,6 +4,8 @@
 
 Jag har tidigare erfarenhet inom ventilation och byggde det här projektet för att kombinera den verksamhetskunskapen med systemutveckling i .NET. Appen hjälper en användare att hålla ordning på ventilationsaggregat och deras serviceärenden. All information i demon är fiktiv.
 
+**Prova demon:** [ventilationsservice-demo.onrender.com](https://ventilationsservice-demo.onrender.com)
+
 ## Lösningens uppbyggnad
 
 Webbgränssnittet anropar ett ASP.NET Core API. API:t använder Entity Framework Core för att läsa och skriva data i SQLite.
@@ -69,11 +71,9 @@ OpenAPI-dokumentet exponeras i utvecklingsläge på `/openapi/v1.json`.
 
 ## Kostnadsfri demo på Render
 
-Projektet innehåller `Dockerfile` och `render.yaml` för att publicera API:t och React-gränssnittet som en tjänst på Render Free. Blueprinten använder en tillfällig SQLite-databas i `/tmp` och aktiverar fiktiv demodata. Ingen persistent disk eller betalplan krävs.
+Appen är publicerad på Render Free. Projektets `Dockerfile` och `render.yaml` beskriver hur API:t och React-gränssnittet byggs och körs tillsammans. Tjänsten använder en tillfällig SQLite-databas i `/tmp` och aktiverar fiktiv demodata. Ingen persistent disk eller betalplan krävs.
 
 Render Free stänger av tjänsten efter 15 minuter utan trafik och den första laddningen efter vila kan ta omkring en minut. SQLite-filen försvinner när tjänsten startas om eller vilar; demodata skapas då igen. Ändringar som en besökare gör i demon sparas alltså inte permanent. [Render beskriver begränsningarna för gratistjänster här](https://render.com/docs/free).
-
-För att skapa demon går du till Render, väljer **New → Blueprint**, ansluter GitHub och väljer det här repot. Granska att tjänsten använder **Free**-planen innan du skapar den. Render visar sedan en publik `onrender.com`-adress när bygget är klart.
 
 ## Köra lokalt
 
